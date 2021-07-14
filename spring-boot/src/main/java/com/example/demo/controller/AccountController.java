@@ -2,9 +2,12 @@ package com.example.demo.controller;
 
 import com.example.demo.repository.AccountRepository;
 import com.example.demo.repository.entity.Account;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.demo.request.LoginRequest;
+import com.example.demo.response.LoginResponse;
+import com.example.demo.util.JWTUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,13 +16,19 @@ import java.util.List;
 @RequestMapping
 public class AccountController {
 
-    @Autowired
-    AccountRepository accountRepository;
+    final AccountRepository accountRepository;
+
+    final PasswordEncoder encoder;
+
+    public AccountController(AccountRepository accountRepository, PasswordEncoder encoder) {
+        this.accountRepository = accountRepository;
+        this.encoder = encoder;
+    }
 
     @PostMapping
-    public ResponseEntity<Object> create(@RequestBody Account account) {
+    public ResponseEntity<String> create(@RequestBody Account account) {
         accountRepository.save(account);
-        return new ResponseEntity("Saved Successfully", HttpStatus.OK);
+        return new ResponseEntity<>("Saved Successfully", HttpStatus.OK);
     }
 
     @GetMapping
@@ -39,7 +48,18 @@ public class AccountController {
         Account account = accountRepository.findById(id).orElseThrow(() -> new Exception("Account Not Found"));
         accountRepository.delete(account);
 
-        return new ResponseEntity<>("Successfully Deleted",HttpStatus.OK);
+        return new ResponseEntity<>("Successfully Deleted", HttpStatus.OK);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<Object> login(@RequestBody LoginRequest request) throws Exception {
+
+        Account existingAccount = accountRepository.findByUsername(request.getUsername()).orElseThrow(() -> new Exception("Account Not Found"));
+        if (encoder.matches(request.getPassword(), existingAccount.getPassword())) {
+            return new ResponseEntity(LoginResponse.builder().token(JWTUtil.generateToken(request.getUsername())).build(), HttpStatus.OK);
+        } else {
+            throw new Exception("Login Invalid");
+        }
     }
 
 
