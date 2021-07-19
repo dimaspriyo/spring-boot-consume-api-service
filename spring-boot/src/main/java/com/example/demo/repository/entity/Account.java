@@ -19,7 +19,9 @@ public class Account {
     @Id
     private String id;
 
-    @Column(name = "username")
+
+    @Column(name = "username",
+    unique = true)
     private String username;
 
     @Column(name = "password")
