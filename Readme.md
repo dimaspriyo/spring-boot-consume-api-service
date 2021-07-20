@@ -3,7 +3,7 @@
 
 Simple app of how to consume api topology like :
 
-![Topology](https://github.com/dimaspriyo/spring-boot-consume-api-service/blob/master/topology.jpg)
+![Topology](https://github.com/dimaspriyo/spring-boot-consume-api-service/blob/master/topology.png)
 
 
 *This repository contain some service from https://github.com/dimaspriyo/spring-boot-multi-database 
