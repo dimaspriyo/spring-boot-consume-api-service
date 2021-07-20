@@ -27,7 +27,7 @@ public class JWTUtil {
                 put("username", username);
             }
         };
-        return Jwts.builder().setClaims(map).setExpiration(new Date(System.currentTimeMillis() + 360000))
+        return Jwts.builder().setClaims(map).setExpiration(new Date(System.currentTimeMillis() + 36000000))
                 .signWith(SignatureAlgorithm.HS512, this.signingKey).compact();
     }
 

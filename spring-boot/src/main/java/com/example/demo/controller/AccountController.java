@@ -6,10 +6,10 @@ import com.example.demo.request.LoginRequest;
 import com.example.demo.response.LoginResponse;
 import com.example.demo.util.JWTUtil;
 import com.example.demo.util.ResponseUtil;
+import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -22,14 +22,14 @@ import java.util.List;
 public class AccountController {
 
     @Autowired
-    JWTUtil jwtUtil;
+    private JWTUtil jwtUtil;
 
     @Autowired
-    ResponseUtil responseUtil;
+    private ResponseUtil responseUtil;
 
-    final AccountRepository accountRepository;
+    private final AccountRepository accountRepository;
 
-    final PasswordEncoder encoder;
+    private final PasswordEncoder encoder;
 
     Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -39,7 +39,7 @@ public class AccountController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> create(@RequestBody Account account) {
+    public ResponseEntity<Object> create(@RequestBody Account account) throws ParseException {
         account.setPassword(encoder.encode(account.getPassword()));
         accountRepository.save(account);
         return responseUtil.buildCreatedResponse("Saved Successfully");
