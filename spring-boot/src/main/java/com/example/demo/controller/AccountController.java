@@ -5,6 +5,7 @@ import com.example.demo.repository.entity.Account;
 import com.example.demo.request.LoginRequest;
 import com.example.demo.response.LoginResponse;
 import com.example.demo.util.JWTUtil;
+import com.example.demo.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.naming.AuthenticationException;
 import java.util.List;
 
 @RestController
@@ -21,6 +23,9 @@ public class AccountController {
 
     @Autowired
     JWTUtil jwtUtil;
+
+    @Autowired
+    ResponseUtil responseUtil;
 
     final AccountRepository accountRepository;
 
@@ -34,22 +39,22 @@ public class AccountController {
     }
 
     @PostMapping
-    public ResponseEntity<String> create(@RequestBody Account account) {
+    public ResponseEntity<Object> create(@RequestBody Account account) {
         account.setPassword(encoder.encode(account.getPassword()));
         accountRepository.save(account);
-        return new ResponseEntity<>("Saved Successfully", HttpStatus.OK);
+        return responseUtil.buildCreatedResponse("Saved Successfully");
     }
 
     @GetMapping
     public ResponseEntity<Object> getAll() {
         List<Account> response = (List<Account>) accountRepository.findAll();
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return responseUtil.buildSuccessResponse(response);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> getById(@PathVariable("id") String id) throws Exception {
         Account response = accountRepository.findById(id).orElseThrow(() -> new Exception("Account Not Found"));
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return responseUtil.buildSuccessResponse(response);
     }
 
     @DeleteMapping("/{id}")
@@ -57,17 +62,16 @@ public class AccountController {
         Account account = accountRepository.findById(id).orElseThrow(() -> new Exception("Account Not Found"));
         accountRepository.delete(account);
 
-        return new ResponseEntity<>("Successfully Deleted", HttpStatus.OK);
+        return responseUtil.buildSuccessResponse("Successfully Deleted");
     }
 
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestBody LoginRequest request) throws Exception {
-        Account existingAccount = accountRepository.findByUsername(request.getUsername()).orElseThrow(() -> new Exception("Account Not Found"));
-        if (encoder.matches(request.getPassword(), existingAccount.getPassword())) {
-            return new ResponseEntity(LoginResponse.builder().token(jwtUtil.generateToken(request.getUsername())).build(), HttpStatus.OK);
-        } else {
-            throw new Exception("Login Invalid");
-        }
+        Account existingAccount = accountRepository.findByUsername(request.getUsername()).orElseThrow(() -> new AuthenticationException("Account Not Found"));
+        if (!encoder.matches(request.getPassword(), existingAccount.getPassword()))
+            throw new AuthenticationException(("Login Failed"));
+
+        return responseUtil.buildSuccessResponse(LoginResponse.builder().token(jwtUtil.generateToken(request.getUsername())).build());
     }
 
 
