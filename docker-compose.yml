@@ -1,0 +1,18 @@
+version: '3.1'
+services:
+    postgresql:
+        build:
+            context: ./postgresql
+        networks:
+            - spring-boot-consume-api-service
+    spring-boot:
+        build:
+            context: ./spring-boot
+        ports:
+            - 8080:8080
+        networks:
+            - spring-boot-consume-api-service  
+        depends_on:
+            - postgresql
+networks:
+    spring-boot-consume-api-service:
