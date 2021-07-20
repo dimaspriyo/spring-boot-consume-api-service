@@ -25,7 +25,7 @@ public class DataChildController {
 
     private CloseableHttpClient httpClient = HttpClients.createDefault();
 
-    private String baseUrl = "http://localhost:8081/postgresql/child";
+    private String baseUrl = "http://api-service:8081/postgresql/child";
 
     @GetMapping()
     public ResponseEntity<Object> getAll() throws IOException, ParseException {

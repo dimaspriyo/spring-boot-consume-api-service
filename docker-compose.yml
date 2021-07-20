@@ -5,6 +5,11 @@ services:
             context: ./postgresql
         networks:
             - spring-boot-consume-api-service
+    mysql:
+        build:
+            context: ./mysql
+        networks:
+            - spring-boot-consume-api-service 
     spring-boot:
         build:
             context: ./spring-boot
@@ -14,5 +19,12 @@ services:
             - spring-boot-consume-api-service  
         depends_on:
             - postgresql
+    api-service:
+        build:
+            context: ./api-service
+        networks:
+            - spring-boot-consume-api-service  
+        depends_on:
+            - postgresql    
 networks:
     spring-boot-consume-api-service:

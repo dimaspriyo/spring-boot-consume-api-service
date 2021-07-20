@@ -25,7 +25,7 @@ public class DataDriverController {
 
     private CloseableHttpClient httpClient = HttpClients.createDefault();
 
-    private String baseUrl = "http://localhost:8081/mysql/driver";
+    private String baseUrl = "http://api-service:8081/mysql/driver";
 
     @GetMapping()
     public ResponseEntity<Object> getAll() throws IOException, ParseException {

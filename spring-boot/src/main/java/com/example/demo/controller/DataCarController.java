@@ -25,7 +25,7 @@ public class DataCarController {
 
     private CloseableHttpClient httpClient = HttpClients.createDefault();
 
-    private String baseUrl = "http://localhost:8081/mysql/car";
+    private String baseUrl = "http://api-service:8081/mysql/car";
 
     @GetMapping()
     public ResponseEntity<Object> getAll() throws IOException, ParseException {
