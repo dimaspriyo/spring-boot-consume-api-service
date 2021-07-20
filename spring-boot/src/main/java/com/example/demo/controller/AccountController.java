@@ -38,7 +38,7 @@ public class AccountController {
         this.encoder = encoder;
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<Object> create(@RequestBody Account account) throws ParseException {
         account.setPassword(encoder.encode(account.getPassword()));
         accountRepository.save(account);
@@ -57,7 +57,7 @@ public class AccountController {
         return responseUtil.buildSuccessResponse(response);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Object> delete(@PathVariable("id") String id) throws Exception {
         Account account = accountRepository.findById(id).orElseThrow(() -> new Exception("Account Not Found"));
         accountRepository.delete(account);
